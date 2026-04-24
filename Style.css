@@ -1,0 +1,241 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* ── CSS Variables ─────────────────────────────────── */
+:root {
+  --bg:          #f8fafc;
+  --bg-alt:      #f1f5f9;
+  --card:        #ffffff;
+  --border:      #e2e8f0;
+  --text:        #1e293b;
+  --text-muted:  #64748b;
+  --text-light:  #94a3b8;
+  --btn-muted:   #e2e8f0;
+  --btn-muted-hover: #cbd5e1;
+  --input-border: #d1d5db;
+  --shadow:      0 4px 6px -1px rgba(0,0,0,.10), 0 2px 4px -2px rgba(0,0,0,.06);
+  --shadow-lg:   0 10px 25px -5px rgba(0,0,0,.12), 0 4px 10px -6px rgba(0,0,0,.08);
+  --transition:  all 0.25s cubic-bezier(.4,0,.2,1);
+}
+
+html.dark {
+  --bg:          #0f172a;
+  --bg-alt:      #0a0f1e;
+  --card:        #1e293b;
+  --border:      #334155;
+  --text:        #f1f5f9;
+  --text-muted:  #94a3b8;
+  --text-light:  #64748b;
+  --btn-muted:   #334155;
+  --btn-muted-hover: #475569;
+  --input-border: #475569;
+  --shadow:      0 4px 6px -1px rgba(0,0,0,.4), 0 2px 4px -2px rgba(0,0,0,.3);
+  --shadow-lg:   0 10px 25px -5px rgba(0,0,0,.5), 0 4px 10px -6px rgba(0,0,0,.4);
+}
+
+/* ── Base ──────────────────────────────────────────── */
+body { font-family: 'Poppins', sans-serif; background-color: var(--bg); color: var(--text); transition: background-color .3s, color .3s; }
+
+/* ── Dark overrides ────────────────────────────────── */
+html.dark .bg-white        { background-color: var(--card)     !important; }
+html.dark .bg-gray-50      { background-color: var(--bg-alt)   !important; }
+html.dark .bg-gray-100     { background-color: var(--btn-muted) !important; }
+html.dark .bg-gray-200     { background-color: #334155         !important; }
+html.dark .bg-gray-800     { background-color: #020617         !important; }
+html.dark .text-gray-800   { color: var(--text)       !important; }
+html.dark .text-gray-700   { color: var(--text)       !important; }
+html.dark .text-gray-600   { color: var(--text-muted) !important; }
+html.dark .text-gray-500   { color: var(--text-muted) !important; }
+html.dark .text-gray-400   { color: var(--text-light) !important; }
+html.dark .border-gray-100,
+html.dark .border-gray-200,
+html.dark .border-gray-300  { border-color: var(--border) !important; }
+html.dark .shadow-sm,
+html.dark .shadow-md        { box-shadow: var(--shadow)   !important; }
+html.dark .hover\:bg-gray-50:hover   { background-color: #273548 !important; }
+html.dark .hover\:bg-gray-300:hover  { background-color: var(--btn-muted-hover) !important; }
+html.dark .hover\:bg-blue-50:hover   { background-color: #1e3a5f !important; }
+html.dark .hover\:bg-red-50:hover    { background-color: #3b1a1a !important; }
+html.dark input, html.dark .auth-input {
+  background-color: #0f172a  !important;
+  border-color:     var(--input-border) !important;
+  color:            var(--text) !important;
+}
+html.dark input::placeholder  { color: var(--text-light) !important; }
+html.dark .login-container    { background: rgba(15,23,42,.97) !important; }
+html.dark #whiteOverlay        { background-color: #0f172a !important; }
+html.dark .link-card           { border-color: var(--border) !important; }
+html.dark .link-card:hover     { border-color: #3b82f6 !important; }
+html.dark .emoji-toolbar .bg-gray-100 { background-color: var(--btn-muted) !important; }
+html.dark .otp-box             { background-color: #0f172a !important; border-color: var(--input-border) !important; color: var(--text) !important; }
+
+/* ── Dark mode toggle ──────────────────────────────── */
+#darkToggle {
+  display: flex; align-items: center; gap: .45rem;
+  padding: .45rem 1rem; border-radius: .5rem;
+  font-size: .85rem; font-weight: 500;
+  cursor: pointer; border: none;
+  background: rgba(255,255,255,.18); color: #fff;
+  backdrop-filter: blur(6px);
+  transition: var(--transition);
+}
+#darkToggle:hover { background: rgba(255,255,255,.28); transform: translateY(-1px); }
+#darkToggle .toggle-icon { font-size: 1.05rem; transition: transform .4s cubic-bezier(.4,0,.2,1); }
+html.dark #darkToggle .toggle-icon { transform: rotate(20deg); }
+
+/* ── Gradient ──────────────────────────────────────── */
+.gradient-bg { background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); }
+
+/* ── Logged-in button ──────────────────────────────── */
+.logged-in-btn {
+  background: rgba(255,255,255,.22) !important;
+  color: #fff !important;
+  border: 1.5px solid rgba(255,255,255,.45) !important;
+  backdrop-filter: blur(6px);
+  animation: slideInBounce .5s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes slideInBounce {
+  from { opacity:0; transform:translateY(-8px) scale(.9); }
+  to   { opacity:1; transform:translateY(0)    scale(1); }
+}
+
+/* ── Emoji toolbar ─────────────────────────────────── */
+.emoji-toolbar button { transition: var(--transition); }
+.emoji-toolbar button:hover { transform: translateY(-2px); }
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(59,130,246,.5); }
+  70%  { box-shadow: 0 0 0 6px rgba(59,130,246,0); }
+  100% { box-shadow: 0 0 0 0 rgba(59,130,246,0); }
+}
+.emoji-toolbar button.selected { animation: pulse-ring 1.4s ease infinite; }
+
+/* ── Map (Leaflet) ─────────────────────────────────── */
+#trafficMap {
+  border-radius: 0.75rem;
+  /* Isolate the map's stacking context so Leaflet's internal
+     z-indices don't bleed on top of dropdowns and modals */
+  isolation: isolate;
+  z-index: 0;
+  position: relative;
+}
+
+/* Leaflet popup styling */
+.leaflet-popup-content-wrapper {
+  border-radius: 0.75rem !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,.15) !important;
+}
+.leaflet-popup-content { margin: 10px 12px !important; }
+
+/* Dark mode map tile tint */
+html.dark #trafficMap .leaflet-tile {
+  filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+}
+html.dark .leaflet-popup-content-wrapper { background: #1e293b !important; color: #f1f5f9 !important; }
+html.dark .leaflet-popup-tip { background: #1e293b !important; }
+
+/* ── Link cards ────────────────────────────────────── */
+.link-card { transition: var(--transition); }
+.link-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
+
+/* ── Emoji preview popup ───────────────────────────── */
+#emojiPreview { position: fixed; z-index: 1000; border-radius: .5rem; background: var(--card); box-shadow: var(--shadow-lg); padding: .25rem; pointer-events: none; }
+
+/* ── Login modal ───────────────────────────────────── */
+.login-container {
+  background: rgba(255,255,255,.97);
+  backdrop-filter: blur(12px);
+  border-radius: 1.25rem;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,.25);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.login-container::-webkit-scrollbar { width: 4px; }
+.login-container::-webkit-scrollbar-track { background: transparent; }
+.login-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+html.dark .login-container::-webkit-scrollbar-thumb { background: #475569; }
+
+/* ── Auth step ─────────────────────────────────────── */
+.auth-step { transition: opacity .25s ease; }
+@keyframes stepIn {
+  from { opacity: 0; transform: translateX(18px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.step-animate { animation: stepIn .35s cubic-bezier(.4,0,.2,1) both; }
+
+/* ── Auth helpers ──────────────────────────────────── */
+.auth-error { font-size: .8rem; color: #ef4444; margin-top: .3rem; }
+.auth-input  { transition: var(--transition); }
+.auth-input:focus { box-shadow: 0 0 0 3px rgba(59,130,246,.4); }
+.auth-back { display: inline-flex; align-items: center; gap: .3rem; font-size: .82rem; color: #64748b; cursor: pointer; background: none; border: none; padding: 0; transition: color .2s; }
+.auth-back:hover { color: #3b82f6; }
+.auth-divider { display: flex; align-items: center; gap: .75rem; color: #94a3b8; font-size: .8rem; margin: .75rem 0; }
+.auth-divider::before, .auth-divider::after { content: ''; flex: 1; height: 1px; background: #e2e8f0; }
+html.dark .auth-divider::before, html.dark .auth-divider::after { background: #334155; }
+
+/* ── OTP boxes ─────────────────────────────────────── */
+.otp-box {
+  width: 2.8rem; height: 3.2rem;
+  text-align: center; font-size: 1.5rem; font-weight: 700;
+  border: 2px solid #d1d5db; border-radius: .5rem;
+  outline: none; transition: border-color .2s, box-shadow .2s;
+}
+.otp-box:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,.25); }
+
+/* ── OTP status banner ─────────────────────────────── */
+.otp-status-banner {
+  display: flex; align-items: center; gap: .5rem;
+  font-size: .82rem; font-weight: 500;
+  border-radius: .6rem; padding: .65rem 1rem;
+  margin-bottom: 1rem; border: 1.5px solid;
+  transition: all .3s ease;
+}
+.otp-sending {
+  background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8;
+}
+html.dark .otp-sending { background: #1e3a5f; border-color: #2563eb; color: #93c5fd; }
+
+.otp-sent {
+  background: #f0fdf4; border-color: #86efac; color: #166534;
+}
+html.dark .otp-sent { background: #14532d; border-color: #4ade80; color: #86efac; }
+
+.otp-error {
+  background: #fff7ed; border-color: #fed7aa; color: #9a3412;
+  font-family: monospace; letter-spacing: .04em;
+}
+html.dark .otp-error { background: #431407; border-color: #ea580c; color: #fdba74; }
+
+/* ── Spinners ──────────────────────────────────────── */
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.btn-spinner {
+  display: inline-block;
+  width: .9rem; height: .9rem;
+  border: 2px solid rgba(29,78,216,.3);
+  border-top-color: #1d4ed8;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  flex-shrink: 0;
+}
+.btn-spinner-white {
+  border-color: rgba(255,255,255,.3);
+  border-top-color: #fff;
+}
+
+/* ── Password toggle ───────────────────────────────── */
+.pwd-wrap    { position: relative; }
+.pwd-toggle  { position: absolute; right: .75rem; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #94a3b8; padding: .2rem; transition: color .2s; }
+.pwd-toggle:hover { color: #64748b; }
+
+/* ── Menu ──────────────────────────────────────────── */
+#menuButton { transition: var(--transition); }
+#menuButton:hover { transform: scale(1.05); }
+
+/* ── History ───────────────────────────────────────── */
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);} }
+.history-item { animation: fadeIn .3s ease-out forwards; }
+
+/* ── Ensure dropdowns + modals always sit above the map ── */
+#profileDropdown,
+#menuDropdown      { z-index: 1000 !important; position: absolute; }
+#loginOverlay      { z-index: 2000 !important; }
+#whiteOverlay      { z-index: 2000 !important; }

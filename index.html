@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DRIVEWISE</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { darkMode: 'class' }</script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <!-- Leaflet (anchors emoji markers to real lat/lng coords) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen">
+
+<!-- ══════════════════════════════════════════════════
+     MAIN CONTENT
+══════════════════════════════════════════════════════ -->
+<div id="mainContent">
+
+  <!-- Header -->
+  <header class="gradient-bg text-white py-6 shadow-lg">
+    <div class="container mx-auto px-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <i class="fas fa-car text-3xl"></i>
+          <h1 class="text-2xl md:text-3xl font-bold tracking-wide">DRIVEWISE</h1>
+        </div>
+        <div class="flex items-center space-x-3 relative">
+          <button id="darkToggle" aria-label="Toggle dark mode">
+            <span class="toggle-icon">🌙</span><span>Dark</span>
+          </button>
+          <button id="profileButton" class="bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-50 transition">
+            <i class="fas fa-user mr-2"></i>Profile
+          </button>
+          <div id="profileDropdown" class="hidden absolute right-0 top-12 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+            <a href="#" id="signInBtn" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50">Sign In</a>
+            <a href="#" id="signUpBtn" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50">Sign Up</a>
+          </div>
+        </div>
+      </div>
+      <p class="mt-2 text-blue-100 text-sm">Help other users by reporting incidents in your area</p>
+    </div>
+  </header>
+
+  <!-- Nav -->
+  <div class="w-full bg-white shadow-sm">
+    <div class="container mx-auto px-4">
+      <div class="relative">
+        <button id="menuButton" class="py-3 text-gray-600 hover:text-blue-600 transition">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
+        <div id="menuDropdown" class="hidden absolute left-0 mt-1 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+          <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"><i class="fas fa-map-marked-alt mr-2"></i>Live Map</a>
+          <a href="#" id="openHistory" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50"><i class="fas fa-history mr-2"></i>History</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="container mx-auto px-4 py-8">
+
+    <!-- About -->
+    <section class="bg-white rounded-xl shadow-md p-6 mb-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4 text-center">About DriveWise</h2>
+      <div class="prose max-w-4xl mx-auto text-gray-700 space-y-4">
+        <p>DriveWise is built to make your city smarter, one emoji at a time. 🚦🚧</p>
+        <p>Traffic congestion is one of the biggest challenges in urban areas — messing with commute times, safety, and even the air we breathe. Our mission? Use data and real-time feedback from you, the community, to fight back.</p>
+        <p>Our predictive model forecasts traffic conditions up to 15 minutes ahead with about 85% accuracy. Whether it's roadwork, accidents, or a random downpour slowing traffic down, DriveWise lets you drop quick emoji reports to alert others in real-time.</p>
+      </div>
+    </section>
+
+    <!-- Map + Toolbar -->
+    <div class="flex flex-col lg:flex-row gap-6 mb-8">
+
+      <!-- Emoji toolbar -->
+      <div class="emoji-toolbar bg-white rounded-xl shadow-md p-4 w-full lg:w-64 flex-shrink-0">
+        <h3 class="text-lg font-semibold text-gray-800 mb-1">Report an Incident</h3>
+        <p class="text-xs text-gray-500 mb-4">Select an emoji, then click the map.</p>
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-gray-700">Roadwork</span>
+            <button onclick="selectEmoji('🚧',this)" class="bg-gray-100 hover:bg-blue-100 p-3 rounded-lg text-2xl">🚧</button>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-gray-700">Accident</span>
+            <button onclick="selectEmoji('🚗💥',this)" class="bg-gray-100 hover:bg-blue-100 p-3 rounded-lg text-2xl">🚗💥</button>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-gray-700">Slow Traffic</span>
+            <button onclick="selectEmoji('🐌',this)" class="bg-gray-100 hover:bg-blue-100 p-3 rounded-lg text-2xl">🐌</button>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-gray-700">Weather</span>
+            <button onclick="selectEmoji('🌧️',this)" class="bg-gray-100 hover:bg-blue-100 p-3 rounded-lg text-2xl">🌧️</button>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-gray-700">Police</span>
+            <button onclick="selectEmoji('🚓',this)" class="bg-gray-100 hover:bg-blue-100 p-3 rounded-lg text-2xl">🚓</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Map -->
+      <div class="flex-1">
+        <div id="trafficMap" class="rounded-xl shadow-md" style="height:24rem;"></div>
+        <div class="flex justify-end space-x-3 mt-4">
+          <button onclick="undoEmoji()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg font-medium transition flex items-center">
+            <i class="fas fa-undo mr-2"></i>Undo
+          </button>
+          <button onclick="redoEmoji()" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg font-medium transition flex items-center">
+            <i class="fas fa-redo mr-2"></i>Redo
+          </button>
+          <button onclick="refreshMap()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition flex items-center">
+            <i class="fas fa-sync-alt mr-2"></i>Refresh
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Resources -->
+  <section class="bg-gray-50 py-12 px-4">
+    <div class="container mx-auto">
+      <h3 class="text-2xl font-bold text-center text-gray-800 mb-8">Useful Resources</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <a href="https://maps.google.com" target="_blank" class="link-card bg-white rounded-xl shadow-md p-6 text-center hover:border-blue-500 border-2 border-transparent transition">
+          <div class="text-blue-600 mb-4"><i class="fas fa-map-marked-alt text-4xl"></i></div>
+          <h4 class="text-xl font-semibold mb-2 text-gray-800">Google Maps</h4>
+          <p class="text-gray-600">Get directions and real-time traffic updates</p>
+        </a>
+        <a href="https://www.waze.com" target="_blank" class="link-card bg-white rounded-xl shadow-md p-6 text-center hover:border-blue-500 border-2 border-transparent transition">
+          <div class="text-blue-600 mb-4"><i class="fas fa-car text-4xl"></i></div>
+          <h4 class="text-xl font-semibold mb-2 text-gray-800">Waze Live Traffic</h4>
+          <p class="text-gray-600">Community-based traffic and navigation app</p>
+        </a>
+        <a href="/cdn-cgi/l/email-protection#ed8e8283998c8e99ad899f849b889a849e88c38c9d9d" class="link-card bg-white rounded-xl shadow-md p-6 text-center hover:border-blue-500 border-2 border-transparent transition">
+          <div class="text-blue-600 mb-4"><i class="fas fa-envelope text-4xl"></i></div>
+          <h4 class="text-xl font-semibold mb-2 text-gray-800">Contact Us</h4>
+          <p class="text-gray-600">Have questions? We're here to help</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-gray-800 text-white py-6">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="flex items-center space-x-3 mb-4 md:mb-0">
+          <i class="fas fa-car text-2xl text-blue-400"></i>
+          <span class="text-xl font-bold">DriveWise</span>
+        </div>
+        <div class="flex space-x-6">
+          <a href="#" class="hover:text-blue-400 transition">Terms</a>
+          <a href="#" class="hover:text-blue-400 transition">Privacy</a>
+          <a href="#" class="hover:text-blue-400 transition">About</a>
+          <a href="#" class="hover:text-blue-400 transition">Careers</a>
+        </div>
+      </div>
+      <div class="mt-4 text-center md:text-left text-gray-400 text-sm">&copy; 2025 DriveWise. All rights reserved.</div>
+    </div>
+  </footer>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     HISTORY OVERLAY
+══════════════════════════════════════════════════════ -->
+<div id="whiteOverlay" class="hidden fixed inset-0 bg-white z-50 overflow-y-auto">
+  <div class="container mx-auto px-4 py-8 max-w-3xl">
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold text-gray-800 flex items-center">
+        <i class="fas fa-history text-blue-500 mr-3"></i>Incident History
+      </h1>
+      <button id="closeHistory" class="text-gray-500 hover:text-gray-700 text-2xl"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="mb-8">
+      <div class="flex items-center mb-4">
+        <h2 class="text-xl font-semibold text-gray-700">Your Reports</h2>
+        <span id="historyCount" class="ml-4 text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">0 entries</span>
+      </div>
+      <div class="bg-white rounded-lg shadow-sm overflow-hidden" id="historyContainer"></div>
+    </div>
+    <footer class="mt-12 text-center text-sm text-gray-500">
+      <p>History is stored locally in your browser.</p>
+      <div class="mt-4">
+        <button onclick="clearHistory()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700 transition">
+          <i class="fas fa-trash-alt mr-1"></i>Clear history
+        </button>
+      </div>
+    </footer>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     AUTH MODAL
+══════════════════════════════════════════════════════ -->
+<div id="loginOverlay" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+  <div class="login-container w-full max-w-md p-8 mx-4 relative">
+
+    <!-- Close -->
+    <button id="closeLogin" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
+      <i class="fas fa-times"></i>
+    </button>
+
+    <!-- ── STEP 1: Email ─────────────────────────── -->
+    <div id="step-email" class="auth-step">
+      <div class="text-center mb-6">
+        <div class="w-14 h-14 gradient-bg rounded-full flex items-center justify-center mx-auto mb-3">
+          <i class="fas fa-car text-white text-2xl"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-800">Welcome to DriveWise</h2>
+        <p class="text-gray-500 text-sm mt-1">Enter your email to get started</p>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email address</label>
+          <input id="auth-email" type="email" class="auth-input w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="you@example.com">
+          <p id="err-email" class="auth-error hidden"></p>
+        </div>
+        <button id="btn-next-email" class="w-full gradient-bg text-white py-2.5 rounded-lg font-semibold hover:opacity-90 transition flex items-center justify-center gap-2">
+          Continue <i class="fas fa-arrow-right text-sm"></i>
+        </button>
+        <div class="auth-divider">or</div>
+        <p class="text-center text-sm text-gray-600">
+          Don't have an account?
+          <a href="#" id="link-goto-signup-from-email" class="text-blue-600 font-medium hover:underline ml-1">Sign up free</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- ── STEP 2: Password ──────────────────────── -->
+    <div id="step-password" class="auth-step hidden">
+      <div class="mb-6">
+        <button id="btn-change-email" class="auth-back mb-4"><i class="fas fa-arrow-left"></i> Back</button>
+        <h2 class="text-xl font-bold text-gray-800">Enter your password</h2>
+        <div class="flex items-center gap-2 mt-1">
+          <i class="fas fa-envelope text-blue-400 text-sm"></i>
+          <span id="signin-email-display" class="text-sm text-gray-500 font-medium"></span>
+        </div>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <div class="pwd-wrap">
+            <input id="auth-password" type="password" class="auth-input w-full px-4 py-2.5 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Your password">
+            <button type="button" id="toggle-signin-pwd" class="pwd-toggle"><i class="fas fa-eye"></i></button>
+          </div>
+          <p id="err-password" class="auth-error hidden"></p>
+        </div>
+        <div class="text-right">
+          <a href="#" id="link-forgot-pwd" class="text-sm text-blue-600 hover:underline">Forgot password?</a>
+        </div>
+        <button id="btn-signin" class="w-full gradient-bg text-white py-2.5 rounded-lg font-semibold hover:opacity-90 transition">Sign In</button>
+        <div class="auth-divider">or</div>
+        <p class="text-center text-sm text-gray-600">
+          New here?
+          <a href="#" id="link-goto-signup-from-pwd" class="text-blue-600 font-medium hover:underline ml-1">Create an account</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- ── STEP 3: Forgot password ───────────────── -->
+    <div id="step-forgot" class="auth-step hidden">
+      <div class="mb-6">
+        <button id="btn-back-to-password" class="auth-back mb-4"><i class="fas fa-arrow-left"></i> Back</button>
+        <h2 class="text-xl font-bold text-gray-800">Reset your password</h2>
+        <p class="text-sm text-gray-500 mt-1">Enter your email and we'll send you a verification code.</p>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email address</label>
+          <input id="forgot-email" type="email" class="auth-input w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="you@example.com">
+          <p id="err-forgot" class="auth-error hidden"></p>
+        </div>
+        <button id="btn-send-reset" class="w-full gradient-bg text-white py-2.5 rounded-lg font-semibold hover:opacity-90 transition flex items-center justify-center gap-2">
+          <span id="btn-send-reset-text"><i class="fas fa-paper-plane mr-2"></i>Send OTP</span>
+          <span id="btn-send-reset-spinner" class="hidden"><span class="btn-spinner"></span> Sending…</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── STEP 4: OTP ───────────────────────────── -->
+    <div id="step-otp" class="auth-step hidden">
+      <div class="mb-5">
+        <h2 class="text-xl font-bold text-gray-800 text-center">Check your inbox</h2>
+        <p class="text-sm text-gray-500 text-center mt-1">
+          We emailed a 6-digit code to<br>
+          <span id="otp-target-email" class="font-semibold text-gray-700"></span>
+        </p>
+      </div>
+
+      <!-- Status banner — changes based on email send result -->
+      <div id="otp-status-banner" class="otp-status-banner otp-sending">
+        <span class="btn-spinner"></span>
+        <span id="otp-status-text">Sending email…</span>
+      </div>
+
+      <div class="flex justify-center gap-2 mb-4">
+        <input class="otp-box auth-input" type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code">
+        <input class="otp-box auth-input" type="text" inputmode="numeric" maxlength="1">
+        <input class="otp-box auth-input" type="text" inputmode="numeric" maxlength="1">
+        <input class="otp-box auth-input" type="text" inputmode="numeric" maxlength="1">
+        <input class="otp-box auth-input" type="text" inputmode="numeric" maxlength="1">
+        <input class="otp-box auth-input" type="text" inputmode="numeric" maxlength="1">
+      </div>
+      <p id="err-otp" class="auth-error hidden text-center mb-3"></p>
+
+      <button id="btn-verify-otp" class="w-full gradient-bg text-white py-2.5 rounded-lg font-semibold hover:opacity-90 transition mb-3 flex items-center justify-center gap-2">
+        <span id="btn-verify-text">Verify OTP</span>
+        <span id="btn-verify-spinner" class="hidden"><span class="btn-spinner btn-spinner-white"></span></span>
+      </button>
+      <p class="text-center text-sm text-gray-500">
+        Didn't receive it?
+        <button id="btn-resend-otp" class="text-blue-600 font-medium hover:underline ml-1 bg-transparent border-none cursor-pointer">Resend</button>
+      </p>
+    </div>
+
+    <!-- ── STEP 5: New password ──────────────────── -->
+    <div id="step-new-password" class="auth-step hidden">
+      <div class="mb-6">
+        <h2 class="text-xl font-bold text-gray-800">Set new password</h2>
+        <p class="text-sm text-gray-500 mt-1">Choose a strong password for your account.</p>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">New password</label>
+          <div class="pwd-wrap">
+            <input id="new-pwd" type="password" class="auth-input w-full px-4 py-2.5 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Min. 6 characters">
+            <button type="button" id="toggle-new-pwd" class="pwd-toggle"><i class="fas fa-eye"></i></button>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Confirm password</label>
+          <div class="pwd-wrap">
+            <input id="new-pwd-confirm" type="password" class="auth-input w-full px-4 py-2.5 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Repeat password">
+            <button type="button" id="toggle-new-pwd-confirm" class="pwd-toggle"><i class="fas fa-eye"></i></button>
+          </div>
+          <p id="err-new-pwd" class="auth-error hidden"></p>
+        </div>
+        <button id="btn-set-new-pwd" class="w-full gradient-bg text-white py-2.5 rounded-lg font-semibold hover:opacity-90 transition">Save & Sign In</button>
+      </div>
+    </div>
+
+    <!-- ── STEP 6: Sign Up ───────────────────────── -->
+    <div id="step-signup" class="auth-step hidden">
+      <div class="text-center mb-6">
+        <div class="w-14 h-14 gradient-bg rounded-full flex items-center justify-center mx-auto mb-3">
+          <i class="fas fa-user-plus text-white text-xl"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-800">Create your account</h2>
+        <p class="text-gray-500 text-sm mt-1">Join the DriveWise community</p>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+          <input id="signup-name" type="text" class="auth-input w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Your name">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email address</label>
+          <input id="signup-email" type="email" class="auth-input w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="you@example.com">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <div class="pwd-wrap">
+            <input id="signup-pwd" type="password" class="auth-input w-full px-4 py-2.5 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Min. 6 characters">
+            <button type="button" id="toggle-signup-pwd" class="pwd-toggle"><i class="fas fa-eye"></i></button>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+          <div class="pwd-wrap">
+            <input id="signup-pwd-confirm" type="password" class="auth-input w-full px-4 py-2.5 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Repeat your password">
+            <button type="button" id="toggle-signup-pwd-confirm" class="pwd-toggle"><i class="fas fa-eye"></i></button>
+          </div>
+          <p id="err-signup" class="auth-error hidden"></p>
+        </div>
+        <button id="btn-do-signup" class="w-full gradient-bg text-white py-2.5 rounded-lg font-semibold hover:opacity-90 transition flex items-center justify-center gap-2">
+          <span id="btn-signup-text">Create Account</span>
+          <span id="btn-signup-spinner" class="hidden"><span class="btn-spinner btn-spinner-white"></span></span>
+        </button>
+        <div class="auth-divider">or</div>
+        <p class="text-center text-sm text-gray-600">
+          Already have an account?
+          <a href="#" id="link-goto-signin-from-signup" class="text-blue-600 font-medium hover:underline ml-1">Sign in</a>
+        </p>
+      </div>
+    </div>
+
+  </div><!-- /login-container -->
+</div><!-- /loginOverlay -->
+
+<script
+ src="script.js"></script>
+</body>
+</html>
